@@ -30,10 +30,10 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#070708' }}>
-      <header style={{ borderBottom: '1px solid #1f1f1f' }} className="px-8 py-4 flex items-center gap-4">
-        <img src="/logo.png" alt="TRS" className="h-8" />
-        <div style={{ width: '1px', height: '24px', backgroundColor: '#333' }} />
+    <div className="min-h-screen" style={{ backgroundColor: '#0a3356', display: 'flex', flexDirection: 'column' }}>
+      <header style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }} className="px-8 py-4 flex items-center gap-4">
+        <img src="/logo-cvrs.jfif" alt="CVRS" className="h-10" style={{ borderRadius: '4px' }} />
+        <div style={{ width: '1px', height: '24px', backgroundColor: 'rgba(255,255,255,0.25)' }} />
         <span className="font-bold text-lg tracking-wide" style={{ color: '#fff' }}>ConcilIA</span>
       </header>
 
@@ -61,6 +61,15 @@ export default function App() {
           onReiniciar={handleReiniciar}
         />
       )}
+      <footer style={{
+        borderTop: '1px solid rgba(255,255,255,0.1)',
+        padding: '14px 32px',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+        marginTop: 'auto',
+      }}>
+        <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px' }}>Desarrollado por</span>
+        <img src="/logo-trs-completo.png" alt="TRS Automatizaciones" style={{ height: '22px', opacity: 0.65 }} />
+      </footer>
     </div>
   )
 }

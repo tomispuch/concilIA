@@ -44,7 +44,7 @@ function buildExcel(conciliadas, revision, saldoContabilidad, saldoExtracto, par
     rows.push([title])
     rows.push(['Fecha', 'Número', 'Importe'])
     let sum = 0
-    items.forEach((item, idx) => {
+    items.forEach((item) => {
       const importe = item.edicion?.importe ?? item.banco?.importe ?? 0
       const concepto = item.edicion?.concepto ?? item.banco?.descripcion ?? ''
       sum += importe
@@ -65,7 +65,6 @@ function buildExcel(conciliadas, revision, saldoContabilidad, saldoExtracto, par
   rows.push(['Diferencia', '', formatImporte(diferencia)])
 
   const ws = XLSX.utils.aoa_to_sheet(rows)
-
   ws['!cols'] = [{ wch: 40 }, { wch: 20 }, { wch: 20 }]
 
   const wb = XLSX.utils.book_new()
@@ -88,11 +87,11 @@ export default function DownloadScreen({ conciliadas, revision, saldoContabilida
     <div style={{ maxWidth: '600px', margin: '0 auto', padding: '64px 24px', textAlign: 'center' }}>
       <div style={{
         width: '64px', height: '64px', borderRadius: '50%',
-        backgroundColor: 'rgba(250,19,58,0.1)', border: '2px solid rgba(250,19,58,0.3)',
+        backgroundColor: 'rgba(255,255,255,0.1)', border: '2px solid rgba(255,255,255,0.25)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         margin: '0 auto 24px',
       }}>
-        <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#FA133A" strokeWidth="2">
+        <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth="2">
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       </div>
@@ -100,35 +99,35 @@ export default function DownloadScreen({ conciliadas, revision, saldoContabilida
       <h1 style={{ color: '#fff', fontSize: '24px', fontWeight: '700', margin: '0 0 8px' }}>
         Conciliación lista
       </h1>
-      <p style={{ color: '#555', fontSize: '14px', margin: '0 0 40px' }}>
+      <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '14px', margin: '0 0 40px' }}>
         {params.empresa} · {params.periodo}
       </p>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '40px' }}>
-        <div style={{ backgroundColor: '#0e0e0f', border: '1px solid #1a1a1a', borderRadius: '8px', padding: '16px' }}>
-          <div style={{ color: '#555', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', marginBottom: '6px' }}>Partidas</div>
+        <div style={{ backgroundColor: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '16px' }}>
+          <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', marginBottom: '6px' }}>Partidas</div>
           <div style={{ color: '#fff', fontSize: '22px', fontWeight: '700' }}>{totalPartidas}</div>
         </div>
-        <div style={{ backgroundColor: '#0e0e0f', border: '1px solid #1a1a1a', borderRadius: '8px', padding: '16px' }}>
-          <div style={{ color: '#555', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', marginBottom: '6px' }}>Rechazadas</div>
-          <div style={{ color: rechazadas.length > 0 ? '#FA133A' : '#fff', fontSize: '22px', fontWeight: '700' }}>{rechazadas.length}</div>
+        <div style={{ backgroundColor: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '16px' }}>
+          <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', marginBottom: '6px' }}>Rechazadas</div>
+          <div style={{ color: rechazadas.length > 0 ? '#f87171' : '#fff', fontSize: '22px', fontWeight: '700' }}>{rechazadas.length}</div>
         </div>
-        <div style={{ backgroundColor: '#0e0e0f', border: '1px solid #1a1a1a', borderRadius: '8px', padding: '16px' }}>
-          <div style={{ color: '#555', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', marginBottom: '6px' }}>Diferencia</div>
-          <div style={{ color: Math.abs(diferencia) < 1 ? '#10b981' : '#f59e0b', fontSize: '18px', fontWeight: '700' }}>
+        <div style={{ backgroundColor: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '16px' }}>
+          <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', marginBottom: '6px' }}>Diferencia</div>
+          <div style={{ color: Math.abs(diferencia) < 1 ? '#34d399' : '#fbbf24', fontSize: '18px', fontWeight: '700' }}>
             {formatImporte(diferencia)}
           </div>
         </div>
       </div>
 
-      <div style={{ marginBottom: '16px', backgroundColor: '#0e0e0f', border: '1px solid #1a1a1a', borderRadius: '8px', padding: '16px', textAlign: 'left' }}>
+      <div style={{ marginBottom: '16px', backgroundColor: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '16px', textAlign: 'left' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-          <span style={{ color: '#666', fontSize: '13px' }}>Saldo según Contabilidad</span>
-          <span style={{ color: '#ccc', fontSize: '13px', fontWeight: '600' }}>{formatImporte(saldoContabilidad)}</span>
+          <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px' }}>Saldo según Contabilidad</span>
+          <span style={{ color: 'rgba(255,255,255,0.85)', fontSize: '13px', fontWeight: '600' }}>{formatImporte(saldoContabilidad)}</span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '8px', borderTop: '1px solid #1a1a1a' }}>
-          <span style={{ color: '#666', fontSize: '13px' }}>Saldo según Extracto</span>
-          <span style={{ color: '#ccc', fontSize: '13px', fontWeight: '600' }}>{formatImporte(saldoExtracto)}</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+          <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px' }}>Saldo según Extracto</span>
+          <span style={{ color: 'rgba(255,255,255,0.85)', fontSize: '13px', fontWeight: '600' }}>{formatImporte(saldoExtracto)}</span>
         </div>
       </div>
 
@@ -136,7 +135,7 @@ export default function DownloadScreen({ conciliadas, revision, saldoContabilida
         onClick={handleDescargar}
         style={{
           width: '100%', padding: '16px', borderRadius: '6px', border: 'none',
-          backgroundColor: '#FA133A', color: '#fff',
+          backgroundColor: '#fff', color: '#0a3356',
           fontSize: '16px', fontWeight: '700', cursor: 'pointer',
           marginBottom: '12px', letterSpacing: '0.02em',
         }}
@@ -148,8 +147,8 @@ export default function DownloadScreen({ conciliadas, revision, saldoContabilida
         onClick={onReiniciar}
         style={{
           width: '100%', padding: '12px', borderRadius: '6px',
-          border: '1px solid #2a2a2a', backgroundColor: 'transparent',
-          color: '#666', fontSize: '14px', cursor: 'pointer',
+          border: '1px solid rgba(255,255,255,0.15)', backgroundColor: 'transparent',
+          color: 'rgba(255,255,255,0.5)', fontSize: '14px', cursor: 'pointer',
         }}
       >
         Nueva conciliación
