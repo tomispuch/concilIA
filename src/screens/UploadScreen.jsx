@@ -1,7 +1,20 @@
 import { useState, useRef } from 'react'
 import axios from 'axios'
 
-const N8N_WEBHOOK = import.meta.env.VITE_N8N_WEBHOOK || 'https://tu-n8n.ejemplo.com/webhook/concilia'
+const N8N_WEBHOOK = import.meta.env.VITE_N8N_WEBHOOK || 'https://trs-n8n.qbj5bb.easypanel.host/webhook/concilia'
+const N8N_RESULTADO = 'https://trs-n8n.qbj5bb.easypanel.host/webhook/concilia-resultado'
+
+async function pollResultado(jobId) {
+  const MAX_INTENTOS = 120
+  for (let i = 0; i < MAX_INTENTOS; i++) {
+    await new Promise(r => setTimeout(r, 5000))
+    const res = await fetch(`${N8N_RESULTADO}?jobId=${jobId}`)
+    const data = await res.json()
+    if (data.status === 'completado') return data.resultado
+    if (data.status === 'error') throw new Error(data.error || 'Error procesando la conciliación')
+  }
+  throw new Error('Timeout: la conciliación tardó demasiado. Intentá de nuevo.')
+}
 
 function FileDropZone({ label, accept, file, onChange }) {
   const inputRef = useRef(null)
@@ -75,8 +88,6 @@ export default function UploadScreen({ onResult }) {
     setLoading(true)
     setError(null)
 
-    const longTimer = setTimeout(() => setLoadingLong(true), 30000)
-
     const formData = new FormData()
     formData.append('pdf_banco', pdfBanco)
     formData.append('excel_contable', excelContable)
@@ -87,13 +98,14 @@ export default function UploadScreen({ onResult }) {
     try {
       const res = await axios.post(N8N_WEBHOOK, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
-        timeout: 300000,
+        timeout: 30000,
       })
-      clearTimeout(longTimer)
-      onResult(res.data, { periodo: periodo.trim(), empresa: empresa.trim() })
+      const { jobId } = res.data
+      setLoadingLong(true)
+      const resultado = await pollResultado(jobId)
+      onResult(resultado, { periodo: periodo.trim(), empresa: empresa.trim() })
     } catch (err) {
-      clearTimeout(longTimer)
-      setError(err.response?.data?.message || 'Error al conectar con el servidor. Verificá tu conexión e intentá de nuevo.')
+      setError(err.message || err.response?.data?.message || 'Error al conectar con el servidor. Verificá tu conexión e intentá de nuevo.')
     } finally {
       setLoading(false)
       setLoadingLong(false)
