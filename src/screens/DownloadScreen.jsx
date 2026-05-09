@@ -10,25 +10,25 @@ function buildExcel(conciliadas, revision, saldoContabilidad, saldoExtracto, par
 
   const chequesNoDebitados = aprobadas.filter(i => {
     const clasif = (i.edicion?.clasificacion ?? i.clasificacion_propuesta ?? '').toLowerCase()
-    const tipo = (i.banco?.tipo ?? '').toLowerCase()
+    const tipo = (i.edicion?.tipo ?? i.banco?.tipo ?? '').toLowerCase()
     return clasif === 'temporaria' && tipo === 'debito'
   })
 
   const chequesNoContabilizados = aprobadas.filter(i => {
     const clasif = (i.edicion?.clasificacion ?? i.clasificacion_propuesta ?? '').toLowerCase()
-    const tipo = (i.banco?.tipo ?? '').toLowerCase()
+    const tipo = (i.edicion?.tipo ?? i.banco?.tipo ?? '').toLowerCase()
     return clasif === 'permanente' && tipo === 'debito'
   })
 
   const depositosNoAcreditados = aprobadas.filter(i => {
     const clasif = (i.edicion?.clasificacion ?? i.clasificacion_propuesta ?? '').toLowerCase()
-    const tipo = (i.banco?.tipo ?? '').toLowerCase()
+    const tipo = (i.edicion?.tipo ?? i.banco?.tipo ?? '').toLowerCase()
     return clasif === 'temporaria' && tipo === 'credito'
   })
 
   const depositosNoContabilizados = aprobadas.filter(i => {
     const clasif = (i.edicion?.clasificacion ?? i.clasificacion_propuesta ?? '').toLowerCase()
-    const tipo = (i.banco?.tipo ?? '').toLowerCase()
+    const tipo = (i.edicion?.tipo ?? i.banco?.tipo ?? '').toLowerCase()
     return clasif === 'permanente' && tipo === 'credito'
   })
 

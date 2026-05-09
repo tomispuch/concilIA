@@ -131,13 +131,13 @@ export default function UploadScreen({ onResult }) {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '32px' }}>
         <FileDropZone
-          label="Extracto bancario (PDF)"
-          accept=".pdf"
+          label="Extracto bancario (PDF / Excel)"
+          accept=".pdf,.xlsx,.xls"
           file={pdfBanco}
           onChange={setPdfBanco}
         />
         <FileDropZone
-          label="Sistema contable (Excel)"
+          label="Mayor del sistema contable"
           accept=".xlsx,.xls"
           file={excelContable}
           onChange={setExcelContable}

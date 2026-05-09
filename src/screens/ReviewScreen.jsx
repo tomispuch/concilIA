@@ -1,5 +1,24 @@
 import { useState } from 'react'
 
+const CATEGORIAS = [
+  { value: 'cheques-no-debitados',      label: 'Cheques no debitados',        clasificacion: 'temporaria', tipo: 'debito' },
+  { value: 'cheques-no-contabilizados', label: 'Cheques no contabilizados',    clasificacion: 'permanente', tipo: 'debito' },
+  { value: 'depositos-no-acreditados',  label: 'Depósitos no acreditados',     clasificacion: 'temporaria', tipo: 'credito' },
+  { value: 'depositos-no-contabilizados', label: 'Depósitos no contabilizados', clasificacion: 'permanente', tipo: 'credito' },
+  { value: 'error',                     label: 'Error',                        clasificacion: 'error',      tipo: null },
+]
+
+function getCategoriaValue(clasificacion, tipo) {
+  const norm = (s) => (s ?? '').toLowerCase()
+  const cat = CATEGORIAS.find(c => c.clasificacion === norm(clasificacion) && (c.tipo === norm(tipo) || c.clasificacion === 'error'))
+  return cat?.value ?? 'cheques-no-debitados'
+}
+
+function getCategoriaLabel(clasificacion, tipo) {
+  const cat = CATEGORIAS.find(c => c.clasificacion === (clasificacion ?? '').toLowerCase() && c.tipo === (tipo ?? '').toLowerCase())
+  return cat?.label ?? clasificacion ?? ''
+}
+
 const CONFIANZA_COLORS = {
   alta: { bg: 'rgba(16,185,129,0.2)', color: '#34d399', border: 'rgba(16,185,129,0.35)', label: 'Alta' },
   media: { bg: 'rgba(245,158,11,0.2)', color: '#fbbf24', border: 'rgba(245,158,11,0.35)', label: 'Media' },
@@ -13,7 +32,10 @@ function formatImporte(n) {
 
 function EditPanel({ item, onSave, onCancel }) {
   const [importe, setImporte] = useState(String(item.edicion?.importe ?? item.banco?.importe ?? ''))
-  const [clasificacion, setClasificacion] = useState(item.edicion?.clasificacion ?? item.clasificacion_propuesta ?? 'temporaria')
+  const [categoria, setCategoria] = useState(getCategoriaValue(
+    item.edicion?.clasificacion ?? item.clasificacion_propuesta,
+    item.edicion?.tipo ?? item.banco?.tipo
+  ))
   const [concepto, setConcepto] = useState(item.edicion?.concepto ?? item.banco?.descripcion ?? '')
 
   return (
@@ -32,15 +54,13 @@ function EditPanel({ item, onSave, onCancel }) {
           />
         </div>
         <div>
-          <label style={{ color: 'rgba(255,255,255,0.55)', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Clasificación</label>
+          <label style={{ color: 'rgba(255,255,255,0.55)', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Categoría</label>
           <select
-            value={clasificacion}
-            onChange={e => setClasificacion(e.target.value)}
+            value={categoria}
+            onChange={e => setCategoria(e.target.value)}
             style={{ width: '100%', padding: '8px 10px', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.15)', backgroundColor: 'rgba(0,20,50,0.8)', color: '#fff', fontSize: '13px', outline: 'none', boxSizing: 'border-box' }}
           >
-            <option value="temporaria">Temporaria</option>
-            <option value="permanente">Permanente</option>
-            <option value="error">Error</option>
+            {CATEGORIAS.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
           </select>
         </div>
       </div>
@@ -58,7 +78,10 @@ function EditPanel({ item, onSave, onCancel }) {
           Cancelar
         </button>
         <button
-          onClick={() => onSave({ importe: parseFloat(importe), clasificacion, concepto })}
+          onClick={() => {
+            const cat = CATEGORIAS.find(c => c.value === categoria)
+            onSave({ importe: parseFloat(importe), clasificacion: cat.clasificacion, tipo: cat.tipo ?? item.banco?.tipo, concepto })
+          }}
           style={{ padding: '7px 16px', borderRadius: '4px', border: 'none', backgroundColor: '#fff', color: '#0a3356', fontSize: '13px', fontWeight: '700', cursor: 'pointer' }}
         >
           Guardar
@@ -118,8 +141,8 @@ function RevisionCard({ item, onAprobar, onEditar, onRechazar }) {
           }}>
             Confianza {conf.label}
           </span>
-          <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: '12px', textTransform: 'capitalize' }}>
-            {item.edicion?.clasificacion ?? item.clasificacion_propuesta}
+          <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: '12px' }}>
+            {getCategoriaLabel(item.edicion?.clasificacion ?? item.clasificacion_propuesta, item.edicion?.tipo ?? item.banco?.tipo)}
           </span>
           {item.estado && (
             <span style={{ color: estadoColor, fontSize: '12px', fontWeight: '700', textTransform: 'uppercase' }}>
