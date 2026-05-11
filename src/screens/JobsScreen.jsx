@@ -47,7 +47,10 @@ export default function JobsScreen({ onAbrir, onNueva }) {
         try {
           const r = await fetch(`${N8N_RESULTADO}?jobId=${j.jobId}`)
           const d = await r.json()
-          return { jobId: j.jobId, status: d.status, resultado: d.resultado, error: d.error }
+          const resultado = d.resultado
+            ? (typeof d.resultado === 'string' ? JSON.parse(d.resultado) : d.resultado)
+            : null
+          return { jobId: j.jobId, status: d.status, resultado, error: d.error }
         } catch { return null }
       }))
 
