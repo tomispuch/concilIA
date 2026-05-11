@@ -3,6 +3,7 @@ import './index.css'
 import UploadScreen from './screens/UploadScreen'
 import ReviewScreen from './screens/ReviewScreen'
 import DownloadScreen from './screens/DownloadScreen'
+import JobsScreen, { addJob } from './screens/JobsScreen'
 
 export default function App() {
   const [screen, setScreen] = useState('upload')
@@ -10,9 +11,15 @@ export default function App() {
   const [formParams, setFormParams] = useState({ periodo: '', empresa: '' })
   const [reviewedItems, setReviewedItems] = useState([])
 
-  function handleAnalysisResult(data, params) {
-    const itemsWithState = data.revision.map(item => ({ ...item, estado: null, edicion: null }))
-    setConciliaData(data)
+  function handleJobCreado(jobId, params) {
+    addJob({ jobId, empresa: params.empresa, periodo: params.periodo, status: 'procesando', startedAt: Date.now() })
+    setFormParams(params)
+    setScreen('jobs')
+  }
+
+  function handleAbrirJob(resultado, params) {
+    const itemsWithState = resultado.revision.map(item => ({ ...item, estado: null, edicion: null }))
+    setConciliaData(resultado)
     setFormParams(params)
     setReviewedItems(itemsWithState)
     setScreen('review')
@@ -38,7 +45,13 @@ export default function App() {
       </header>
 
       {screen === 'upload' && (
-        <UploadScreen onResult={handleAnalysisResult} />
+        <UploadScreen onJobCreado={handleJobCreado} />
+      )}
+      {screen === 'jobs' && (
+        <JobsScreen
+          onAbrir={handleAbrirJob}
+          onNueva={() => setScreen('upload')}
+        />
       )}
       {screen === 'review' && (
         <ReviewScreen

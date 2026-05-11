@@ -2,19 +2,6 @@ import { useState, useRef } from 'react'
 import axios from 'axios'
 
 const N8N_WEBHOOK = import.meta.env.VITE_N8N_WEBHOOK || 'https://trs-n8n.qbj5bb.easypanel.host/webhook/concilia'
-const N8N_RESULTADO = 'https://trs-n8n.qbj5bb.easypanel.host/webhook/concilia-resultado'
-
-async function pollResultado(jobId) {
-  const MAX_INTENTOS = 120
-  for (let i = 0; i < MAX_INTENTOS; i++) {
-    await new Promise(r => setTimeout(r, 5000))
-    const res = await fetch(`${N8N_RESULTADO}?jobId=${jobId}`)
-    const data = await res.json()
-    if (data.status === 'completado') return data.resultado
-    if (data.status === 'error') throw new Error(data.error || 'Error procesando la conciliación')
-  }
-  throw new Error('Timeout: la conciliación tardó demasiado. Intentá de nuevo.')
-}
 
 function FileDropZone({ label, accept, file, onChange }) {
   const inputRef = useRef(null)
@@ -71,14 +58,13 @@ function FileDropZone({ label, accept, file, onChange }) {
   )
 }
 
-export default function UploadScreen({ onResult }) {
+export default function UploadScreen({ onJobCreado }) {
   const [pdfBanco, setPdfBanco] = useState(null)
   const [excelContable, setExcelContable] = useState(null)
   const [excelAnterior, setExcelAnterior] = useState(null)
   const [periodo, setPeriodo] = useState('')
   const [empresa, setEmpresa] = useState('')
   const [loading, setLoading] = useState(false)
-  const [loadingLong, setLoadingLong] = useState(false)
   const [error, setError] = useState(null)
 
   const canSubmit = pdfBanco && excelContable && excelAnterior && periodo.trim() && empresa.trim()
@@ -101,14 +87,11 @@ export default function UploadScreen({ onResult }) {
         timeout: 30000,
       })
       const { jobId } = res.data
-      setLoadingLong(true)
-      const resultado = await pollResultado(jobId)
-      onResult(resultado, { periodo: periodo.trim(), empresa: empresa.trim() })
+      onJobCreado(jobId, { empresa: empresa.trim(), periodo: periodo.trim() })
     } catch (err) {
-      setError(err.message || err.response?.data?.message || 'Error al conectar con el servidor. Verificá tu conexión e intentá de nuevo.')
+      setError(err.response?.data?.message || err.message || 'Error al conectar con el servidor. Verificá tu conexión e intentá de nuevo.')
     } finally {
       setLoading(false)
-      setLoadingLong(false)
     }
   }
 
@@ -122,9 +105,7 @@ export default function UploadScreen({ onResult }) {
         }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
         <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '16px', textAlign: 'center', maxWidth: '360px' }}>
-          {loadingLong
-            ? 'Esto puede tardar unos minutos, la IA está procesando los movimientos…'
-            : 'La IA está analizando los movimientos…'}
+          Enviando archivos al servidor…
         </p>
       </div>
     )
