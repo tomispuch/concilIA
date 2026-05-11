@@ -1,5 +1,6 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import axios from 'axios'
+import { loadJobs } from './JobsScreen'
 
 const N8N_WEBHOOK = import.meta.env.VITE_N8N_WEBHOOK || 'https://trs-n8n.qbj5bb.easypanel.host/webhook/concilia'
 
@@ -58,7 +59,7 @@ function FileDropZone({ label, accept, file, onChange }) {
   )
 }
 
-export default function UploadScreen({ onJobCreado }) {
+export default function UploadScreen({ onJobCreado, onVerJobs }) {
   const [pdfBanco, setPdfBanco] = useState(null)
   const [excelContable, setExcelContable] = useState(null)
   const [excelAnterior, setExcelAnterior] = useState(null)
@@ -66,6 +67,11 @@ export default function UploadScreen({ onJobCreado }) {
   const [empresa, setEmpresa] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [jobsCount, setJobsCount] = useState(0)
+
+  useEffect(() => {
+    setJobsCount(loadJobs().length)
+  }, [])
 
   const canSubmit = pdfBanco && excelContable && excelAnterior && periodo.trim() && empresa.trim()
 
@@ -113,6 +119,24 @@ export default function UploadScreen({ onJobCreado }) {
 
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto', padding: '48px 24px' }}>
+      {jobsCount > 0 && (
+        <button
+          onClick={onVerJobs}
+          style={{
+            width: '100%', marginBottom: '24px', padding: '12px 16px',
+            borderRadius: '8px', border: '1px solid rgba(251,191,36,0.35)',
+            backgroundColor: 'rgba(245,158,11,0.1)', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          }}
+        >
+          <span style={{ color: '#fbbf24', fontSize: '13px', fontWeight: '600' }}>
+            {jobsCount === 1
+              ? 'Tenés 1 conciliación reciente'
+              : `Tenés ${jobsCount} conciliaciones recientes`}
+          </span>
+          <span style={{ color: '#fbbf24', fontSize: '13px' }}>Ver →</span>
+        </button>
+      )}
       <div style={{ marginBottom: '40px' }}>
         <h1 style={{ color: '#fff', fontSize: '28px', fontWeight: '700', margin: '0 0 8px' }}>
           Conciliación Bancaria

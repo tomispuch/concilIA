@@ -4,7 +4,7 @@ const N8N_RESULTADO = 'https://trs-n8n.qbj5bb.easypanel.host/webhook/concilia-re
 const JOBS_KEY = 'concilia_jobs'
 const TWO_HOURS = 2 * 60 * 60 * 1000
 
-function loadJobs() {
+export function loadJobs() {
   try {
     return JSON.parse(localStorage.getItem(JOBS_KEY) || '[]')
       .filter(j => Date.now() - j.startedAt < TWO_HOURS)

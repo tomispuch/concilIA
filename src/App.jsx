@@ -45,7 +45,7 @@ export default function App() {
       </header>
 
       {screen === 'upload' && (
-        <UploadScreen onJobCreado={handleJobCreado} />
+        <UploadScreen onJobCreado={handleJobCreado} onVerJobs={() => setScreen('jobs')} />
       )}
       {screen === 'jobs' && (
         <JobsScreen
