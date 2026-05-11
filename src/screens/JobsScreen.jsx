@@ -36,6 +36,19 @@ const STATUS_STYLE = {
 
 export default function JobsScreen({ onAbrir, onNueva }) {
   const [jobs, setJobs] = useState(loadJobs)
+  const [abriendo, setAbriendo] = useState(null)
+
+  async function handleAbrir(job) {
+    setAbriendo(job.jobId)
+    try {
+      const r = await fetch(`${N8N_RESULTADO}?jobId=${job.jobId}`)
+      const d = await r.json()
+      const resultado = typeof d.resultado === 'string' ? JSON.parse(d.resultado) : d.resultado
+      if (resultado) onAbrir(resultado, { empresa: job.empresa, periodo: job.periodo })
+    } finally {
+      setAbriendo(null)
+    }
+  }
 
   useEffect(() => {
     const poll = async () => {
@@ -141,14 +154,17 @@ export default function JobsScreen({ onAbrir, onNueva }) {
 
                   {job.status === 'completado' && (
                     <button
-                      onClick={() => onAbrir(job.resultado, { empresa: job.empresa, periodo: job.periodo })}
+                      onClick={() => handleAbrir(job)}
+                      disabled={abriendo === job.jobId}
                       style={{
                         padding: '6px 16px', borderRadius: '4px', border: 'none',
                         backgroundColor: '#fff', color: '#0a3356',
-                        fontSize: '13px', fontWeight: '700', cursor: 'pointer',
+                        fontSize: '13px', fontWeight: '700',
+                        cursor: abriendo === job.jobId ? 'wait' : 'pointer',
+                        opacity: abriendo === job.jobId ? 0.7 : 1,
                       }}
                     >
-                      Abrir
+                      {abriendo === job.jobId ? '…' : 'Abrir'}
                     </button>
                   )}
                 </div>
